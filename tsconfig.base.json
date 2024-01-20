@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@teams/augmentations": ["libs/augmentations/src/index.ts"],
       "@teams/validators": ["libs/validators/src/index.ts"]
     }
   },
