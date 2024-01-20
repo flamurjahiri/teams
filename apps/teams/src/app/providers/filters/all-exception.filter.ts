@@ -59,21 +59,20 @@ export class AllExceptionFilter implements ExceptionFilter {
 
 }
 
-const
-  mapException = (err: any, httpStatuses: Record<number, number>): { error: any, status: number } => {
-    const data = err?.response?.message || err?.response;
-    const date = new Date(Date.now());
+const mapException = (err: any, httpStatuses: Record<number, number>): { error: any, status: number } => {
+  const data = err?.response?.message || err?.response;
+  const date = new Date(Date.now());
 
-    let code = err?.status || err?.code || 500;
-    if (!httpStatuses[code]) {
-      Logger.error('error', `Error code : ${code} is not allowed so returning 500`);
-      code = 500;
-    }
-
-    const errMessage = err?.response ? err?.response : err?.message;
-
-    const message = (!!err?.status || !!err?.code) ? errMessage : "Something went wrong";
-
-
-    return {error: {message, code, date, data}, status: code};
+  let code = err?.status || err?.code || 500;
+  if (!httpStatuses[code]) {
+    Logger.error('error', `Error code : ${code} is not allowed so returning 500`);
+    code = 500;
   }
+
+  const errMessage = err?.response ? err?.response : err?.message;
+
+  const message = (!!err?.status || !!err?.code) ? errMessage : "Something went wrong";
+
+
+  return {error: {message, code, date, data}, status: code};
+}
