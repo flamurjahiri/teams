@@ -6,6 +6,11 @@ import {MongoModule} from "@teams/database";
 import {ValidationModule} from "@teams/validators";
 import {EventEmitterModule} from "@nestjs/event-emitter";
 import {ScheduleModule} from "@nestjs/schedule";
+import {APP_INTERCEPTOR} from "@nestjs/core";
+import {ArrayResponseInterceptor} from "./providers/interceptors/array.response.interceptor";
+import {RequestLoggingInterceptor} from "./providers/interceptors/request-logging.interceptor";
+import {ActiveRequestsInterceptor} from "./providers/interceptors/active.requests.interceptor";
+import {ProcessExceptions} from "./providers/exceptions/process.exceptions";
 
 @Module({
   imports: [
@@ -20,7 +25,12 @@ import {ScheduleModule} from "@nestjs/schedule";
     MongoModule
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {provide: APP_INTERCEPTOR, useClass: ArrayResponseInterceptor},
+    {provide: APP_INTERCEPTOR, useClass: RequestLoggingInterceptor},
+    {provide: APP_INTERCEPTOR, useClass: ActiveRequestsInterceptor},
+    ProcessExceptions
+  ],
 })
 export class AppModule {
 }

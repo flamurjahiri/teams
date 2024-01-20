@@ -15,6 +15,7 @@
     "@nestjs/platform-express": "^10.0.2",
     "@nestjs/schedule": "^4.0.0",
     "axios": "^1.0.0",
+    "dayjs": "^1.11.10",
     "joiful": "^3.0.2",
     "mongoose": "^8.1.0",
     "reflect-metadata": "^0.1.13",
