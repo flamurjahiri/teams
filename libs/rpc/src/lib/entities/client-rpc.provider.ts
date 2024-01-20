@@ -15,9 +15,23 @@ function createClientRpcProvider<T>(options: Options): Provider<T> {
   }
 }
 
+const channelOptions = {
+  // Send keepalive pings every 6 minutes, default is none.
+  // Must be more than GRPC_ARG_HTTP2_MIN_RECV_PING_INTERVAL_WITHOUT_DATA_MS on the server (5 minutes.)
+  'grpc.keepalive_time_ms': 6 * 60 * 1000,
+  // Keepalive ping timeout after 5 seconds, default is 20 seconds.
+  'grpc.keepalive_timeout_ms': 5 * 1000,
+  // Allow keepalive pings when there are no gRPC calls.
+  'grpc.keepalive_permit_without_calls': 1,
+};
+
 
 function clientRPCFactory<T>(options: Options): T {
-  return new ErrorHandlingGrpcClient(options.options).getService<T>(options.name);
+  if (!options?.options?.channelOptions) {
+    options.options.channelOptions = channelOptions;
+  }
+
+  return new ErrorHandlingGrpcClient({...options.options}).getService<T>(options.name);
 }
 
 
