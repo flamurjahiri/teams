@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package notifications;
+
+service NotificationService{
+  rpc sendPhoneMessage(SendPhoneMessageRequest) returns (Reply) {}
+  rpc makePhoneCalls(MakePhoneCallRequest) returns (Reply) {}
+  rpc sendVerificationCode(SendVerificationCodeRequest) returns (Reply) {}
+  rpc verifyCode(VerifyCodeRequest) returns (Reply) {}
+
+  rpc sendCustomEmail(SendCustomEmailRequest) returns (Reply) {}
+  rpc sendTemplateEmails(SendTemplateEmailRequest) returns (Reply) {}
+}
+
+message SendPhoneMessageRequest{
+  repeated string phoneNumbers = 1;
+  string body = 2;
+  repeated AdditionalDataReq additionalData = 3;
+}
+
+message MakePhoneCallRequest{
+  repeated string phoneNumbers = 1;
+  string body = 2;
+  repeated AdditionalDataReq additionalData = 3;
+  int32 finishOnKey = 4;
+  string action = 5;
+  string method = 6;
+  int32 actionPerformNumber = 7;
+  int32 maxWaitBeforeClose = 8;
+  bool performActionOnEmptyResult = 9;
+}
+
+message SendVerificationCodeRequest{
+  string to = 1;
+}
+
+message VerifyCodeRequest{
+  string to = 1;
+  string code = 2;
+}
+
+message Reply{
+  bool success = 1;
+  string message = 2;
+  ErrorReply error = 3;
+}
+
+message ErrorReply {
+  string message = 1;
+  int32 code = 2;
+}
+
+
+
+message AdditionalDataReq{
+  string key = 1;
+  string stringifyValue = 2;
+}
+
+
+message SendCustomEmailRequest{
+  repeated string emails = 1;
+  Content content = 2;
+  From from = 3;
+}
+
+message Content {
+  string subject = 1;
+  string body = 2;
+}
+
+message From {
+  string email = 1;
+  string name = 2;
+}
+
+message SendTemplateEmailRequest{
+  repeated string emails = 1;
+  string subject = 2;
+  From from = 3;
+  string templateId = 4;
+  repeated AdditionalDataReq additionalData = 5;
+}

@@ -12,6 +12,7 @@ import {RequestLoggingInterceptor} from "./providers/interceptors/request-loggin
 import {ActiveRequestsInterceptor} from "./providers/interceptors/active.requests.interceptor";
 import {ProcessExceptions} from "./providers/exceptions/process.exceptions";
 import {ErrorLogsModule} from "./logs/error-logs.module";
+import {RpcModule} from "@teams/rpc";
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import {ErrorLogsModule} from "./logs/error-logs.module";
     ScheduleModule.forRoot(),
     ValidationModule,
     MongoModule,
-    ErrorLogsModule
+    ErrorLogsModule,
+    RpcModule.forRoot(),
   ],
   controllers: [],
   providers: [

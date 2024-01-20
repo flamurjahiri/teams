@@ -2,7 +2,7 @@
 import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 import {BaseDocument} from "@teams/database";
 
-@Schema({collection: 'Logs-Errors'})
+@Schema({collection: 'Error-Logs'})
 export class ErrorLog extends BaseDocument {
   @Prop({type: Object})
   errorEntity: any

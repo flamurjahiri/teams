@@ -1,6 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
-  "files": [],
+  "files": [
+    "../../libs/augmentations/src/lib/array/array.augmentation.ts"
+  ],
   "include": [],
   "references": [
     {

@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start:dev": "nx serve teams --inspect",
+    "start:teams:dev": "nx serve teams --inspect",
     "start:notification:dev": "nx serve notification-service --inspect",
-    "start:tests:dev": "nx test augmentations && nx test validators && nx test database && nx test utils && nx test teams "
+    "proto:teams:generate": "tsproto --path ./apps/teams/src/app/protos",
+    "run:tests:dev": "nx test augmentations && nx test validators && nx test database && nx test utils && nx test rpc && nx test teams  && nx test notification-service"
   },
   "private": true,
   "dependencies": {
