@@ -4,14 +4,16 @@
   "license": "MIT",
   "scripts": {
     "start:dev": "nx serve teams --inspect",
-    "start:tests:dev": "nx test augmentations && nx test validators && nx test teams"
+    "start:tests:dev": "nx test augmentations && nx test validators && nx test database && nx test utils && nx test teams "
   },
   "private": true,
   "dependencies": {
     "@nestjs/common": "^10.0.2",
     "@nestjs/core": "^10.0.2",
+    "@nestjs/event-emitter": "^2.0.3",
     "@nestjs/mongoose": "^10.0.2",
     "@nestjs/platform-express": "^10.0.2",
+    "@nestjs/schedule": "^4.0.0",
     "axios": "^1.0.0",
     "joiful": "^3.0.2",
     "mongoose": "^8.1.0",
