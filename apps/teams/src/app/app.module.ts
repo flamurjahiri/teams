@@ -1,7 +1,7 @@
 import {Module} from '@nestjs/common';
 import {MongooseModule} from "@nestjs/mongoose";
 import {MONGO_CONNECTION_URL, MONGO_DATABASE} from "../assets/environments";
-import {SERVICE_DATABASE_CONNECTION_NAME} from "../assets/config.options";
+import {DEFAULT_DATABASE_CONN} from "../assets/config.options";
 import {MongoModule} from "@teams/database";
 import {ValidationModule} from "@teams/validators";
 import {EventEmitterModule} from "@nestjs/event-emitter";
@@ -11,18 +11,20 @@ import {ArrayResponseInterceptor} from "./providers/interceptors/array.response.
 import {RequestLoggingInterceptor} from "./providers/interceptors/request-logging.interceptor";
 import {ActiveRequestsInterceptor} from "./providers/interceptors/active.requests.interceptor";
 import {ProcessExceptions} from "./providers/exceptions/process.exceptions";
+import {ErrorLogsModule} from "./providers/logs/error-logs.module";
 
 @Module({
   imports: [
     MongooseModule.forRoot(MONGO_CONNECTION_URL, {
       dbName: MONGO_DATABASE,
       autoIndex: true,
-      connectionName: SERVICE_DATABASE_CONNECTION_NAME
+      connectionName: DEFAULT_DATABASE_CONN
     }),
     EventEmitterModule.forRoot({global: true, wildcard: true, delimiter: '.'}),
     ScheduleModule.forRoot(),
     ValidationModule,
-    MongoModule
+    MongoModule,
+    ErrorLogsModule
   ],
   controllers: [],
   providers: [

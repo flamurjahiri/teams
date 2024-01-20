@@ -2,6 +2,7 @@ import {HttpAdapterHost, NestFactory} from '@nestjs/core';
 import {AppModule} from './app/app.module';
 import {AllExceptionFilter} from "./app/providers/filters/all-exception.filter";
 import {Logger} from "@nestjs/common";
+import {EventEmitter2} from "@nestjs/event-emitter";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,7 +16,7 @@ async function bootstrap() {
   })
 
 
-  app.useGlobalFilters(new AllExceptionFilter(app.get(HttpAdapterHost)))
+  app.useGlobalFilters(new AllExceptionFilter(app.get(HttpAdapterHost), app.get(EventEmitter2)))
   await app.startAllMicroservices();
   await app.listen(process.env.PORT || 9090);
 
