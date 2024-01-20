@@ -17,6 +17,7 @@
     "paths": {
       "@teams/augmentations": ["libs/augmentations/src/index.ts"],
       "@teams/database": ["libs/database/src/index.ts"],
+      "@teams/rpc": ["libs/rpc/src/index.ts"],
       "@teams/utils": ["libs/utils/src/index.ts"],
       "@teams/validators": ["libs/validators/src/index.ts"]
     }
