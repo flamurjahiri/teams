@@ -1,7 +1,7 @@
 /* eslint-disable */
 //region init classes
 
-import {set} from "./augmentation.utils";
+import {set, unset} from "./augmentation.utils";
 
 type ArrayProjection = string | boolean
 
@@ -42,6 +42,8 @@ declare global {
     group(key: string): Map<string, T[]>
 
     distinct(key?: string): Array<T>
+
+    project(data: { [k: string]: ArrayProjection | { val: ArrayProjection, default: any } }): Array<T>
 
     fields(fields: string[]): Array<T>
 
@@ -127,6 +129,26 @@ Array.prototype.fields = function <T>(this: T[], fields: string[]): Array<T> {
   }, {}) as T);
 }
 
+Array.prototype.project = function <T>(this: T[], data: {
+  [k: string]: ArrayProjection | { val: ArrayProjection, default: any }
+}): T[] {
+
+  return this?.filter(i => !!i)
+    .map(item =>
+      projectFilter(item, {}, data,
+        (value) => !!value && ((typeof value === 'boolean' && value) || (typeof value === 'string')),
+        (k, v) => typeof v === 'boolean' ? getValueAtKey(item, k) : v.startsWith('$') ? getValueAtKey(item, v.substring(1)) : v,
+        (r, k, value) => set(r, k, value))
+    )
+    .map(item =>
+      projectFilter(item, item, data,
+        (value) => !!value && typeof value === 'boolean' && !value,
+        (k) => getValueAtKey(item, k),
+        (r, k) => unset(r, k))
+    ) as T[]
+
+}
+
 Array.prototype.add = function <T>(this: T[], index: number, entity: T): Array<T> {
   if (!this?.length) {
     return [entity];
@@ -165,3 +187,41 @@ Array.prototype.paginateList = function <T>(this: T[], paginatedFilters: Paginat
 const getValueAtKey = (obj: any, k: string) => {
   return k?.split('.')?.reduce((a, v) => a?.[v], obj);
 }
+
+
+/**
+ *
+ * @param item - current item
+ * @param startWith - in reduce start with (for set we start with {}, for unset we start with item }
+ * @param data - projection data
+ * @param predicate - filter which @data are applicable to the current item
+ * @param getValueFunction - get value for item
+ * @param arrayFunction - set or unset function
+ */
+function projectFilter<T>(item: T, startWith: T, data: {
+                            [k: string]: ArrayProjection | { val: ArrayProjection, default: any }
+                          },
+                          predicate: (value) => boolean, getValueFunction: (k, v) => string, arrayFunction: (r, k, value) => void): T {
+
+  //find if we have any data that matches the predicate (include fields, or exclude fields)
+  const predicated = Object.entries(data)
+    .filter(i => !!i)
+    .filter(([_, value]) => predicate(typeof value === 'object' ? value.val : value));
+
+  if (!predicated?.length) {
+    return item;
+  }
+
+  return predicated
+    .reduce((r, [k, v]) => {
+      const value = getValueFunction(k, typeof v === 'object' ? v.val : v);
+
+      if (value) {
+        arrayFunction(r, k, value);
+      } else if (v?.['default']) {
+        arrayFunction(r, k, v['default'])
+      }
+      return r;
+    }, startWith);
+}
+

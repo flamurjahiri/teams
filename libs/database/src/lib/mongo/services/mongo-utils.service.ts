@@ -30,13 +30,13 @@ export class MongoUtils {
       map(item => item.toObject()))
   }
 
-  insertOne<T extends BaseDocument>(model: Model<T>, entity: T): Observable<any> {
+  insertOne<T extends BaseDocument>(model: Model<T>, entity: T): Observable<T> {
     if (!entity._id) {
-      entity._id = new ObjectId().toHexString()
+      entity._id = new ObjectId().toHexString();
     }
     const date = new Date()
-    entity.updatedAt = date
-    entity.createdAt = date
+    entity.updatedAt = date;
+    entity.createdAt = date;
 
 
     return fromPromise(model.create(entity)).pipe(
