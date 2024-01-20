@@ -2,7 +2,9 @@
   "name": "@teams/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "start:dev": "nx serve teams --inspect"
+  },
   "private": true,
   "dependencies": {
     "@nestjs/common": "^10.0.2",
