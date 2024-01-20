@@ -11,7 +11,7 @@ import {ArrayResponseInterceptor} from "./providers/interceptors/array.response.
 import {RequestLoggingInterceptor} from "./providers/interceptors/request-logging.interceptor";
 import {ActiveRequestsInterceptor} from "./providers/interceptors/active.requests.interceptor";
 import {ProcessExceptions} from "./providers/exceptions/process.exceptions";
-import {ErrorLogsModule} from "./providers/logs/error-logs.module";
+import {ErrorLogsModule} from "./logs/error-logs.module";
 
 @Module({
   imports: [

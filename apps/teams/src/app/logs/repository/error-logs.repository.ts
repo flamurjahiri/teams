@@ -4,7 +4,7 @@ import {InjectModel} from "@nestjs/mongoose";
 import {ErrorLog} from "../schemas/error-log.schema";
 import {Model} from "mongoose";
 import {Observable} from "rxjs";
-import {DEFAULT_DATABASE_CONN} from "../../../../assets/config.options";
+import {DEFAULT_DATABASE_CONN} from "../../../assets/config.options";
 import {MongoUtils} from "@teams/database";
 
 @Injectable()

@@ -3,7 +3,7 @@ import {MongooseModule} from '@nestjs/mongoose'
 import {ErrorLog, ErrorLogSchema} from "./schemas/error-log.schema";
 import {ErrorLogsRepository} from "./repository/error-logs.repository";
 import {ErrorLogsService} from "./services/error-logs.service";
-import {DEFAULT_DATABASE_CONN} from "../../../assets/config.options";
+import {DEFAULT_DATABASE_CONN} from "../../assets/config.options";
 
 @Module({
   exports: [],
