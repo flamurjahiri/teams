@@ -2,7 +2,7 @@ import {Injectable} from "@nestjs/common";
 import * as bcrypt from 'bcrypt';
 import {Observable} from "rxjs";
 import {fromPromise} from "@teams/utils";
-import {User} from "../entities/users.schema";
+import {User} from "../../users/entities/users.schema";
 
 @Injectable()
 export class PasswordValidationService {

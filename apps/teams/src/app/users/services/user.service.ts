@@ -1,9 +1,10 @@
+/* eslint-disable */
 import {BadRequestException, Inject, Injectable} from "@nestjs/common";
 import {combineLatest, forkJoin, iif, mergeMap, Observable, of, tap, throwError} from "rxjs";
 import {DeleteResult, PaginatedEntityResponse, PaginatedFilters, UpdateResult} from "@teams/database";
 import {User} from "../entities/users.schema";
 import {UserRepository} from "../repository/user.repository";
-import {PasswordValidationService} from "./password.validation.service";
+import {PasswordValidationService} from "../../utils-global/services/password.validation.service";
 import {EventEmitter2} from "@nestjs/event-emitter";
 import {CodeRequest, ValidateType, ValidateUsersData} from "../dto/validate.users.data";
 

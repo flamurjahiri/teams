@@ -13,6 +13,8 @@ import {ActiveRequestsInterceptor} from "./providers/interceptors/active.request
 import {ProcessExceptions} from "./providers/exceptions/process.exceptions";
 import {ErrorLogsModule} from "./logs/error-logs.module";
 import {RpcModule} from "@teams/rpc";
+import {GlobalUtilsModule} from "./utils-global/global-utils.module";
+import {LoginModule} from "./login/login.module";
 
 @Module({
   imports: [
@@ -23,10 +25,12 @@ import {RpcModule} from "@teams/rpc";
     }),
     EventEmitterModule.forRoot({global: true, wildcard: true, delimiter: '.'}),
     ScheduleModule.forRoot(),
+    GlobalUtilsModule,
     ValidationModule,
     MongoModule,
     ErrorLogsModule,
     RpcModule.forRoot(),
+    LoginModule
   ],
   controllers: [],
   providers: [
