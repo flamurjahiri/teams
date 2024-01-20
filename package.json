@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start:dev": "nx serve teams --inspect"
+    "start:dev": "nx serve teams --inspect",
+    "start:tests:dev": "nx test augmentations && nx test validators && nx test teams"
   },
   "private": true,
   "dependencies": {
