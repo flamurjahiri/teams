@@ -6,4 +6,13 @@ export interface HttpRequest extends Request {
   id: string;
   user: User;
   userSimple: UserSimple
+
+
+}
+
+
+export const setReqData = (req: HttpRequest, user: User): void => {
+  req.id = user._id;
+  req.user = user;
+  req.userSimple = new UserSimple(user);
 }
