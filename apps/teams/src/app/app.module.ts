@@ -18,6 +18,7 @@ import {LoginModule} from "./login/login.module";
 import {AuthModule} from "./auth/auth.module";
 import {RequestUserIdMiddleware} from "./providers/middleware/request-user-id.middleware";
 import {UserController} from "./users/controllers/user.controller";
+import {UserModule} from "./users/user.module";
 
 
 @Module({
@@ -33,6 +34,7 @@ import {UserController} from "./users/controllers/user.controller";
     ValidationModule,
     MongoModule,
     ErrorLogsModule,
+    UserModule,
     RpcModule.forRoot(),
     LoginModule,
     AuthModule
