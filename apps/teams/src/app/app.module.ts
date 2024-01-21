@@ -1,4 +1,4 @@
-import {Module} from '@nestjs/common';
+import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
 import {MongooseModule} from "@nestjs/mongoose";
 import {MONGO_CONNECTION_URL, MONGO_DATABASE} from "../assets/environments";
 import {DEFAULT_DATABASE_CONN} from "../assets/config.options";
@@ -15,6 +15,10 @@ import {ErrorLogsModule} from "./logs/error-logs.module";
 import {RpcModule} from "@teams/rpc";
 import {GlobalUtilsModule} from "./utils-global/global-utils.module";
 import {LoginModule} from "./login/login.module";
+import {AuthModule} from "./auth/auth.module";
+import {RequestUserIdMiddleware} from "./providers/middleware/request-user-id.middleware";
+import {UserController} from "./users/controllers/user.controller";
+
 
 @Module({
   imports: [
@@ -30,7 +34,8 @@ import {LoginModule} from "./login/login.module";
     MongoModule,
     ErrorLogsModule,
     RpcModule.forRoot(),
-    LoginModule
+    LoginModule,
+    AuthModule
   ],
   controllers: [],
   providers: [
@@ -40,5 +45,9 @@ import {LoginModule} from "./login/login.module";
     ProcessExceptions
   ],
 })
-export class AppModule {
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): any {
+    consumer.apply(RequestUserIdMiddleware).forRoutes(UserController)
+  }
+
 }
