@@ -28,10 +28,13 @@ export class AuthRedisService {
   }
 
   async isSuccessfullyLogin(userId: string, token: string): Promise<boolean> {
+    if (!userId) {
+      return false;
+    }
     const cacheToken: string = await this.cacheManager.get(userId);
 
     if (!cacheToken) {
-      return null;
+      return false;
     }
 
     return cacheToken === token;
