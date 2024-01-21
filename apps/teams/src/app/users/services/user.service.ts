@@ -12,8 +12,8 @@ import {CodeRequest, ValidateType, ValidateUsersData} from "../dto/validate.user
 export class UserService {
   //region injections
   @Inject(UserRepository) repo: UserRepository
-  @Inject(PasswordValidationService) passwordValidationService: PasswordValidationService
   @Inject(EventEmitter2) emitter: EventEmitter2
+  @Inject(PasswordValidationService) passwordValidationService: PasswordValidationService
   //endregion
 
 
