@@ -19,6 +19,8 @@ import {AuthModule} from "./auth/auth.module";
 import {RequestUserIdMiddleware} from "./providers/middleware/request-user-id.middleware";
 import {UserController} from "./users/controllers/user.controller";
 import {UserModule} from "./users/user.module";
+import {StadiumModule} from "./stadiums/stadium.module";
+import {ExternalServiceModule} from "./externals/external.module";
 
 
 @Module({
@@ -36,8 +38,10 @@ import {UserModule} from "./users/user.module";
     ErrorLogsModule,
     UserModule,
     RpcModule.forRoot(),
+    StadiumModule,
     LoginModule,
-    AuthModule
+    AuthModule,
+    ExternalServiceModule
   ],
   controllers: [],
   providers: [

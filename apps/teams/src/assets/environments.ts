@@ -18,3 +18,6 @@ export const SERVICE_URL = process.env.SERVICE_URL;
 //region utils
 export const MAX_REQUEST_TIME = Number(process.env.MAX_REQUEST_TIME_SECONDS) || 2;
 //endregion
+
+
+export const GOOGLE_API_KEY  = process.env.GOOGLE_API_KEY;
