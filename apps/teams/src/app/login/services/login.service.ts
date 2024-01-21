@@ -9,11 +9,11 @@ export class LoginService {
   @Inject(PasswordValidationService) private passwordValidationService: PasswordValidationService
 
 
-  canLogin(id: string, password: string): Observable<boolean> {
+  canLogin(id: string, password: string): Observable<{ id: string, password: string, success: boolean }> {
     return this.userService.getById(id).pipe(
       mergeMap(user => combineLatest([of(user), this.passwordValidationService.encodePassword(password)])),
       map(([u, p]) => u.password === p),
-      mergeMap(r => iif(() => r, of(true), throwError(() => new UnauthorizedException())))
+      mergeMap(r => iif(() => r, of({id, password, success: true}), throwError(() => new UnauthorizedException())))
     );
   }
 
