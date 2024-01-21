@@ -1,4 +1,3 @@
-/* eslint-disable */
 import {Controller, Inject} from "@nestjs/common";
 
 import {EventPattern, Payload} from '@nestjs/microservices'

@@ -11,7 +11,9 @@ import {UserRepository} from "./repository/user.repository";
   exports: [UserService],
   imports: [
     MongooseModule.forFeature(
-      [{name: User.name, schema: UserSchema}],
+      [
+        {name: User.name, schema: UserSchema}
+      ],
       DEFAULT_DATABASE_CONN
     )
   ],
