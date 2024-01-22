@@ -5,6 +5,7 @@
   "scripts": {
     "start:teams:dev": "nx serve teams --inspect",
     "start:notification:dev": "nx serve notification-service --inspect",
+    "start:payment:dev": "nx serve payment-service --inspect",
     "proto:teams:generate": "tsproto --path ./apps/teams/src/app/protos",
     "run:tests:dev": "nx test augmentations && nx test validators && nx test database && nx test utils && nx test rpc && nx test teams  && nx test notification-service"
   },
@@ -37,6 +38,7 @@
     "nestjs-twilio": "^4.3.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
+    "stripe": "^14.13.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
