@@ -1,6 +1,4 @@
 import {KafkaOptions, Transport} from "@nestjs/microservices";
-import {Partitioners} from "kafkajs";
-import {join} from "path";
 
 export const KAFKA_OPTIONS: KafkaOptions = {
   transport: Transport.KAFKA,
@@ -27,9 +25,3 @@ export const KAFKA_OPTIONS: KafkaOptions = {
   }
 }
 
-
-export const NOTIFICATION_SERVICE = {
-  url: `${process.env.NOTIFICATION_SERVICE}:${process.env.NOTIFICATION_SERVICE}`,
-  package: 'notifications',
-  protoPath: join(__dirname, '../../../apps/teams/src/app/protos/notifications.proto')
-}

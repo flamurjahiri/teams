@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {BadRequestException, Inject, Injectable, Logger, OnModuleDestroy, OnModuleInit} from '@nestjs/common';
 import Stripe from 'stripe';
 import {catchError, combineLatest, lastValueFrom, mergeMap, Observable, of, retry, tap, throwError, timer} from "rxjs";
@@ -44,7 +46,8 @@ export class PaymentService implements OnModuleInit, OnModuleDestroy {
 
 
   makePayment(payment: Payment): Observable<any> {
-    return this.pay(payment).pipe(
+    return this.insertToDb(payment).pipe(
+      mergeMap(payment => this.pay(payment)),
       tap({
         next: () => this.emitter.emit('payment-success', payment),
         error: (err) => this.emitter.emit('payment-failed', {payment, err})
@@ -57,6 +60,11 @@ export class PaymentService implements OnModuleInit, OnModuleDestroy {
         return throwError(err);
       })
     )
+  }
+
+  insertToDb(payment: Payment): Observable<Payment> {
+    //TODO
+    return of(payment);
   }
 
   private pay(payment: Payment): Observable<any> {
@@ -98,7 +106,7 @@ export class PaymentService implements OnModuleInit, OnModuleDestroy {
 
 
   @OnEvent('payment-success', {async: true})
-  private onSuccess(payment: Payment): Promise<any> {
+  private sendKafkaDataOnSuccess(payment: Payment): Promise<any> {
     const data = {
       success: true,
       id: payment.id,
@@ -106,6 +114,12 @@ export class PaymentService implements OnModuleInit, OnModuleDestroy {
     };
 
     return lastValueFrom(this.sendKafkaData(data, payment.onSuccessPushTo));
+  }
+
+  @OnEvent('payment-success', {async: true})
+  private markAsSuccess(payment: Payment): Promise<any> {
+    //TODO UPDATE MONGO COLLECTION
+    return Promise.resolve();
   }
 
 
@@ -129,6 +143,12 @@ export class PaymentService implements OnModuleInit, OnModuleDestroy {
     return lastValueFrom(this.sendKafkaData(emailData, 'notifications-data'));
   }
 
+
+  @OnEvent('payment-failed', {async: true})
+  private markAsFailed(data: { payment: Payment, err: any }): Promise<any> {
+    //TODO UPDATE MONGO COLLECTION
+    return Promise.resolve();
+  }
 
   private sendKafkaData(data: any, topic: any): Observable<any> {
     return this.client.emit(topic, data).pipe(
