@@ -25,7 +25,7 @@ export class UserService {
       mergeMap(_ => this.passwordValidationService.encodePassword(user.password)),
       tap(password => user.password = password),
       mergeMap(_ => this.repo.createUser(user)),
-      tap(user => this.emitter.emit('user-created', user))
+      tap(user => this.emitter.emit('create-user', user))
     );
   }
 
