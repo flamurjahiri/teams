@@ -10,6 +10,8 @@ import {GRPC_HOST, GRPC_PORT} from "./assets/environments";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.setGlobalPrefix('/notifications/api')
+
   await app.connectMicroservice<GrpcOptions>({
     transport: Transport.GRPC,
     options: {

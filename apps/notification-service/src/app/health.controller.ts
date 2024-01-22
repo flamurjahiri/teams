@@ -10,7 +10,7 @@ import {KAFKA_OPTIONS} from "../assets/config.options";
 import {KafkaOptions} from "@nestjs/microservices/interfaces/microservice-configuration.interface";
 import {Transport} from "@nestjs/microservices";
 
-@Controller('/notification/api/health')
+@Controller('/health')
 export class HealthController {
 
   @Inject(HealthCheckService) healthCheckService: HealthCheckService
