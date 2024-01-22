@@ -30,7 +30,7 @@ export class StadiumService {
 
   getNearLocation(req: HttpRequest, paginatedFilters: PaginatedFilters, lat: number, lng: number): Observable<PaginatedEntityResponse<Stadium>> {
     if (!lat || !lng) {
-      return
+      return of(new PaginatedEntityResponse([], paginatedFilters.limit));
     }
 
     return iif(() => !lat || !lng, of(''), this.mapsService.getCity(lat, lng)).pipe(
