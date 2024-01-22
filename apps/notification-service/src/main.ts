@@ -25,7 +25,7 @@ async function bootstrap() {
 
   await app.listen(8086);
 
-  Logger.log(`🚀 Application successfully started`);
+  Logger.log(`🚀 Notification service successfully started 🚀`);
 }
 
 (async () => await bootstrap())()
