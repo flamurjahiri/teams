@@ -26,8 +26,10 @@ export class PaymentService implements OnModuleInit, OnModuleDestroy {
 
     this.stripe = options?.reduce((a, v) => {
       a[v.name] = new Stripe(v.apiKey, {});
+      Logger.log(`🚀 Stripe ${v.name} successfully started 🚀`);
       return a;
     }, {});
+
 
     this.client = ClientProxyFactory.create(KAFKA_OPTIONS) as ClientKafka;
   }
