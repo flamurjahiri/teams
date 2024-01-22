@@ -4,6 +4,8 @@ import {stringify} from "@teams/validators";
 import {UserSimple} from "../../users/dto/user.simple";
 import {UserSchema} from "../../users/entities/users.schema";
 import {BadRequestException} from "@nestjs/common";
+import {array, number} from "joiful";
+import {WorkingDays} from "./working.days.enum";
 
 @Schema({collection: 'Stadium'})
 export class Stadium extends BaseDocument {
@@ -18,6 +20,18 @@ export class Stadium extends BaseDocument {
 
   @Prop() @stringify().required()
   country: string
+
+  @Prop() @array().required()
+  phoneNumbers: string[]
+
+  @Prop() @number().required()
+  openAt: number
+
+  @Prop() @number().required()
+  closesAt: number
+
+  @Prop() @array().required()
+  workingDays: WorkingDays[]
 }
 
 
