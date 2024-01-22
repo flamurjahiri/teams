@@ -19,7 +19,7 @@ export class NotificationHandlerService {
   @Inject(NotificationsRepository) private readonly repo: NotificationsRepository
 
   @RPCClient({options: NOTIFICATION_SERVICE, name: 'NotificationService'})
-  private configurationService: notifications.NotificationService;
+  private notificationService: notifications.NotificationService;
 
   //endregion
 
@@ -39,7 +39,7 @@ export class NotificationHandlerService {
 
     return lastValueFrom(
       iif(() => isRetry, of(true), this.repo.insertOne(notification)).pipe(
-        mergeMap(_ => this.configurationService.sendVerificationCode({to: user.phoneNumber})),
+        mergeMap(_ => this.notificationService.sendVerificationCode({to: user.phoneNumber})),
         mergeMap(r => iif(() => r.success, of(true), throwError(() => new BadRequestException(r.error?.message)))),
         tap({error: (err) => Logger.log(`Failed to send phone notification with error : ${err}`)}),
         mergeMap(_ => this.repo.deleteByType(user._id, "PHONE")),
@@ -65,7 +65,7 @@ export class NotificationHandlerService {
       additionalData: [
         {
           key: "URL",
-          stringifyValue: `${SERVICE_URL}//teams/api/users/${user._id}/validate/${ValidateType.EMAIL.valueOf()}`
+          stringifyValue: `${SERVICE_URL}/teams/api/users/${user._id}/validate/${ValidateType.EMAIL.valueOf()}`
         },
         {
           key: "name",
@@ -82,7 +82,7 @@ export class NotificationHandlerService {
 
     return lastValueFrom(
       iif(() => isRetry, of(true), this.repo.insertOne(notification)).pipe(
-        mergeMap(_ => this.configurationService.sendTemplateEmails(templateEmailPayload)),
+        mergeMap(_ => this.notificationService.sendTemplateEmails(templateEmailPayload)),
         mergeMap(r => iif(() => r.success, of(true), throwError(() => new BadRequestException(r.error?.message)))),
         tap({error: (err) => Logger.log(`Failed to send template notification with error : ${err}`)}),
         mergeMap(_ => this.repo.deleteByType(user._id, "EMAIL")),
