@@ -25,7 +25,7 @@ export class StadiumRepository {
     return this.mongoUtils.getManyPaginated(this.model, toFilters(req, filters, ownStadium), paginatedFilters, [], ['name', 'city', 'country']);
   }
 
-  getCloseStadiums(req: HttpRequest, paginatedFilters: PaginatedFilters, city: string): Observable<PaginatedEntityResponse<Stadium>> {
+  getNearLocation(req: HttpRequest, paginatedFilters: PaginatedFilters, city: string): Observable<PaginatedEntityResponse<Stadium>> {
     const filters = [];
     if (city) {
       filters.push({city});

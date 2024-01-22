@@ -28,14 +28,14 @@ export class StadiumService {
   }
 
 
-  getCloseStadiums(req: HttpRequest, paginatedFilters: PaginatedFilters, lat: number, lng: number): Observable<PaginatedEntityResponse<Stadium>> {
+  getNearLocation(req: HttpRequest, paginatedFilters: PaginatedFilters, lat: number, lng: number): Observable<PaginatedEntityResponse<Stadium>> {
     if (!lat || !lng) {
       return
     }
 
     return iif(() => !lat || !lng, of(''), this.mapsService.getCity(lat, lng)).pipe(
       catchError(_ => of('')),
-      mergeMap(city => this.stadiumRepository.getCloseStadiums(req, paginatedFilters, city))
+      mergeMap(city => this.stadiumRepository.getNearLocation(req, paginatedFilters, city))
     )
 
   }

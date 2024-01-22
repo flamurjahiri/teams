@@ -30,7 +30,7 @@ export class StadiumController {
   getCloseStadiums(@Query() {lat, lng}: { lat: number, lng: number },
                    @Query(new JoiValidationPipe(PaginatedFilters)) filters: PaginatedFilters,
                    @Req() req: HttpRequest): Observable<PaginatedEntityResponse<Stadium>> {
-    return this.stadiumService.getCloseStadiums(req, filters, lat, lng);
+    return this.stadiumService.getNearLocation(req, filters, lat, lng);
   }
 
   @Post('/data')
