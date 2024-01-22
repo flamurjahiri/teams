@@ -25,6 +25,9 @@ export class StadiumController {
     return this.stadiumService.getById(id);
   }
 
+  /**
+   * returns stadiums to show on map
+   */
   @Get('/')
   @UseGuards(SimpleAuthGuard)
   getCloseStadiums(@Query() {lat, lng}: { lat: number, lng: number },

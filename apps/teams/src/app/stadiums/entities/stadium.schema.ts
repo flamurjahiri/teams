@@ -32,6 +32,9 @@ export class Stadium extends BaseDocument {
 
   @Prop() @array().required()
   workingDays: WorkingDays[]
+
+  @Prop() @stringify().required()
+  address: string
 }
 
 
