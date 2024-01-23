@@ -150,6 +150,18 @@ export class PaymentService implements OnModuleInit, OnModuleDestroy {
     return Promise.resolve();
   }
 
+  @OnEvent('payment-failed', {async: true})
+  private sendKafkaDataOnFailed(d: { payment: Payment, err: any }): Promise<any> {
+    const data = {
+      success: false,
+      id: d.payment.id,
+      name: d.payment.name,
+      err: d.err
+    };
+
+    return lastValueFrom(this.sendKafkaData(data, d.payment.onSuccessPushTo));
+  }
+
   private sendKafkaData(data: any, topic: any): Observable<any> {
     return this.client.emit(topic, data).pipe(
       retry({
