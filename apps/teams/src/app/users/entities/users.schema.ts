@@ -5,7 +5,7 @@ import {stringify} from "@teams/validators";
 import {BadRequestException} from "@nestjs/common";
 import {UserValidatedData} from "./user.validated.data";
 
-@Schema({collection: 'Users'})
+@Schema({collection: 'User'})
 export class User extends BaseDocument {
   @Prop() @stringify().required()
   firstName: string
