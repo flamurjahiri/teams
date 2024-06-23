@@ -17,7 +17,7 @@ export class Neo4JUtils {
 
   query(query: string, operation: Neo4jOperation, parameters?: Parameters): Observable<Record> {
     return this.runQueries([query], operation, parameters).pipe(
-      map(r => r?.[0] as Record)
+      map(r => r?.[0])
     );
   }
 
