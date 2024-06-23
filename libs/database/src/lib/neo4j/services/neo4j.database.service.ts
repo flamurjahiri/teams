@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
 import { NEO_4J_DATABASE, NEO_4J_DRIVER } from '../assets/constants';
 import { Driver } from 'neo4j-driver';
-import { finalize, Observable, throwError } from 'rxjs';
+import { finalize, map, Observable, throwError } from 'rxjs';
 import { Record, ResultSummary, SessionConfig, TransactionConfig } from 'neo4j-driver-core';
 import { OperationProvider } from '../processor/operation.provider';
 import { Parameters } from 'neo4j-driver/types/query-runner';
@@ -28,8 +28,10 @@ export class Neo4JUtils {
   }
 
 
-  execute(query: string, parameters?: Parameters): Observable<ResultSummary[]> {
-    return this.executeQueries([query], parameters);
+  execute(query: string, parameters?: Parameters): Observable<ResultSummary> {
+    return this.executeQueries([query], parameters).pipe(
+      map(r => r?.[0])
+    );
   }
 
   executeQueries(queries: string[], parameters?: Parameters): Observable<ResultSummary[]> {

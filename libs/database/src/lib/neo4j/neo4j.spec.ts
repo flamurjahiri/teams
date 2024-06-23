@@ -6,7 +6,7 @@ import { Driver, Neo4jError } from 'neo4j-driver';
 import { lastValueFrom } from 'rxjs';
 import { Neo4JHealthService } from './health/health.service';
 import { NEO_4J_DATABASE, NEO_4J_DRIVER } from './assets/constants';
-import ConnectionPool from 'ioredis/built/cluster/ConnectionPool';
+import { Neo4jOperation } from './entities/neo4j.operation.type';
 
 describe('neo4j', () => {
   let neoService: Neo4JUtils;
@@ -71,6 +71,39 @@ describe('neo4j', () => {
     expect(result.database.name).toBe('neo4j');
     expect(result.server.address).toContain('localhost:7687');
     expect(result.counters.containsUpdates()).toBe(true);
+
+    const secondResult = await lastValueFrom(neoService.query(`CREATE (flamur2:Person:Actor {name: 'Flamur2 Jahiri'}), (ahmet2:Person:Director {name: 'Ahmet2 Stone'})`, Neo4jOperation.WRITE));
+    //just to insert the data
+    expect(secondResult.length).toEqual(0);
+  });
+
+  it('list all data', async () => {
+    const r = await lastValueFrom(neoService.query('MATCH (n) RETURN n', Neo4jOperation.READ));
+
+    expect(r).toBeDefined();
+    expect(r.length).toBeGreaterThan(0);
+    r.map(item => expect(item.has('n')).toBeTruthy());
+    expect(r.filter(i => i.has('n')).length).toEqual(r.length);
+
+  });
+
+  it('should insert data v2', async () => {
+
+    const query = 'CREATE\n' +
+      '  (keanu:Person {name: \'Keanu Reever\'}),\n' +
+      '  (laurence:Person {name: \'Laurence Fishburne\'}),\n' +
+      '  (carrie:Person {name: \'Carrie-Anne Moss\'}),\n' +
+      '  (tom:Person {name: \'Tom Hanks\'}),\n' +
+      '  (theMatrix:Movie {title: \'The Matrix\'}),\n' +
+      '  (keanu)-[:ACTED_IN]->(theMatrix),\n' +
+      '  (laurence)-[:ACTED_IN]->(theMatrix),\n' +
+      '  (carrie)-[:ACTED_IN]->(theMatrix)';
+
+    // const result = await lastValueFrom(neoService.execute(query));
+    // expect(result.queryType).toBe('w');
+    // expect(result.database.name).toBe('neo4j');
+    // expect(result.server.address).toContain('localhost:7687');
+    // expect(result.counters.containsUpdates()).toBe(true);
   });
 
   it('should close connection', async () => {
@@ -80,7 +113,7 @@ describe('neo4j', () => {
   });
 
   it('not connect to server (connection has been closed)', async () => {
-    await expect(driver?.getServerInfo()).rejects.toThrow(new Neo4jError('Pool is closed, it is no more able to serve requests.', ConnectionPool.name));
+    await expect(driver?.getServerInfo()).rejects.toThrow(new Neo4jError('Pool is closed, it is no more able to serve requests.', null));
   });
 
   it('health check down working', async () => {
