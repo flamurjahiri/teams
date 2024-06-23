@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jOperationProcessor } from '../neo4j.operation.processor';
 import { Record, RxSession } from 'neo4j-driver';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin, Observable, reduce, toArray } from 'rxjs';
 import { Parameters } from 'neo4j-driver/types/query-runner';
 import { TransactionConfig } from 'neo4j-driver-core';
 import { Neo4jOperation } from '../../entities/neo4j.operation.type';
@@ -11,7 +11,11 @@ export class WriteOperation extends Neo4jOperationProcessor<Record> {
 
   run(queries: string[], session: RxSession, parameters?: Parameters, config?: TransactionConfig): Observable<Record[]> {
     return session.executeWrite(tx => {
-      return forkJoin(queries.map(query => tx.run(query, parameters).records()));
+      return forkJoin(
+        queries.map(query => tx.run(query, parameters).records().pipe(toArray()))
+      ).pipe(
+        reduce((a, v) => a.concat(...v), [] as Record[])
+      );
     }, config);
   }
 
