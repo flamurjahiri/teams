@@ -14,7 +14,7 @@ describe('neo4j', () => {
       global,
       module,
       ...rest
-    } = Neo4jModule.testingModule(
+    } = Neo4jModule.forTesting(
       new Neo4jConfig('neo4j://localhost:7687', 'neo4j', 'flamur11'));
 
     moduleRef = await Test.createTestingModule(rest).compile();

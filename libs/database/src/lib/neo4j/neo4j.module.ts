@@ -45,7 +45,7 @@ export class Neo4jModule {
     };
   }
 
-  static testingModule(data: Neo4jConfig): DynamicModule {
+  static forTesting(data: Neo4jConfig): DynamicModule {
     const driver = neo4j.driver(data.uri, neo4j.auth.basic(data.user, data.password), data.config);
     const provider: Provider<Driver> = {
       provide: NEO_4J_DRIVER,
