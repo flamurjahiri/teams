@@ -66,7 +66,7 @@ export class Neo4jModule {
       module: Neo4jModule,
       providers: [
         provider, databaseProvider,
-        Neo4JUtils, ReadOperation, WriteOperation, DefaultOperation, OperationProvider
+        Neo4JUtils, ReadOperation, WriteOperation, DefaultOperation, OperationProvider, Neo4JHealthService
       ],
       exports: [Neo4JUtils]
     };

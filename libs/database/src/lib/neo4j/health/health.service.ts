@@ -11,7 +11,7 @@ export class Neo4JHealthService extends HealthIndicator {
     const startTime = new Date();
 
     const getStatus = (error?: any): HealthIndicatorResult => {
-      return this.getStatus('Neo4j Health Check', !!error, {
+      return this.getStatus('Neo4j Health Check', !error, {
         error, duration: new Date().getTime() - startTime.getTime()
       });
     };
