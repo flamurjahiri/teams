@@ -87,8 +87,36 @@ describe('neo4j', () => {
 
   });
 
-  it('should insert data v2', async () => {
+  it('execute multiple queries', async () => {
+    const firstQuery = await lastValueFrom(neoService.query('MATCH (n) RETURN n', Neo4jOperation.READ));
+    const multipleQueries = await lastValueFrom(neoService.runQueries(['MATCH (n) RETURN n', 'MATCH (m) RETURN m'], Neo4jOperation.READ));
 
+    expect(firstQuery.length * 2).toEqual(multipleQueries.length);
+
+    expect(firstQuery.length).toEqual(multipleQueries.filter(r => r.has('n')).length);
+    expect(firstQuery.length).toEqual(multipleQueries.filter(r => r.has('m')).length);
+
+    expect(multipleQueries.filter(r => r.has('n')).length).toEqual(multipleQueries.filter(r => r.has('m')).length);
+  });
+
+  it('delete all data as execution', async () => {
+
+    const query = 'MATCH (n) DETACH DELETE n';
+
+    const result = await lastValueFrom(neoService.execute(query));
+    expect(result.queryType).toBe('w');
+  });
+
+
+  it('list all data after delete', async () => {
+    const r = await lastValueFrom(neoService.query('MATCH (n) RETURN n', Neo4jOperation.READ));
+
+    expect(r).toBeDefined();
+    expect(r.length).toBe(0);
+  });
+
+
+  it('insert data v2', async () => {
     const query = 'CREATE\n' +
       '  (keanu:Person {name: \'Keanu Reever\'}),\n' +
       '  (laurence:Person {name: \'Laurence Fishburne\'}),\n' +
@@ -99,12 +127,27 @@ describe('neo4j', () => {
       '  (laurence)-[:ACTED_IN]->(theMatrix),\n' +
       '  (carrie)-[:ACTED_IN]->(theMatrix)';
 
-    // const result = await lastValueFrom(neoService.execute(query));
-    // expect(result.queryType).toBe('w');
-    // expect(result.database.name).toBe('neo4j');
-    // expect(result.server.address).toContain('localhost:7687');
-    // expect(result.counters.containsUpdates()).toBe(true);
+    const result = await lastValueFrom(neoService.query(query, Neo4jOperation.WRITE));
+
+    expect(result.length).toBe(0);
   });
+
+
+  it('list all data after insertion', async () => {
+    const r = await lastValueFrom(neoService.query('MATCH (n) RETURN n', Neo4jOperation.READ));
+
+    expect(r).toBeDefined();
+    expect(r.length).toBe(5);
+  });
+
+  it('delete all data as query', async () => {
+
+    const query = 'MATCH (n) DETACH DELETE n';
+
+    const result = await lastValueFrom(neoService.query(query, Neo4jOperation.WRITE));
+    expect(result.length).toBe(0);
+  });
+
 
   it('should close connection', async () => {
     const r = await driver.close();

@@ -29,12 +29,12 @@ export class Neo4JUtils {
 
 
   execute(query: string, parameters?: Parameters): Observable<ResultSummary> {
-    return this.executeQueries([query], parameters).pipe(
+    return this.runExecution([query], parameters).pipe(
       map(r => r?.[0])
     );
   }
 
-  executeQueries(queries: string[], parameters?: Parameters): Observable<ResultSummary[]> {
+  runExecution(queries: string[], parameters?: Parameters): Observable<ResultSummary[]> {
     return this.run(queries, Neo4jOperation.DEFAULT, parameters) as Observable<ResultSummary[]>;
   }
 
