@@ -20,7 +20,7 @@ export class Neo4JUtils {
   }
 
   runQueries(queries: string[], operation: Neo4jOperation, parameters?: Parameters): Observable<Record[]> {
-    if (operation === Neo4jOperation.DEFAULT) {
+    if (operation === Neo4jOperation.EXECUTE) {
       return throwError(() => new BadRequestException('Only Read/Write Inputs allowed!'));
     }
 
@@ -35,7 +35,7 @@ export class Neo4JUtils {
   }
 
   runExecution(queries: string[], parameters?: Parameters): Observable<ResultSummary[]> {
-    return this.run(queries, Neo4jOperation.DEFAULT, parameters) as Observable<ResultSummary[]>;
+    return this.run(queries, Neo4jOperation.EXECUTE, parameters) as Observable<ResultSummary[]>;
   }
 
 

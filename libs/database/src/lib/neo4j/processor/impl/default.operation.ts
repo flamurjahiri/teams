@@ -20,6 +20,6 @@ export class DefaultOperation extends Neo4jOperationProcessor<ResultSummary> {
   }
 
   getType(): Neo4jOperation {
-    return Neo4jOperation.DEFAULT;
+    return Neo4jOperation.EXECUTE;
   }
 }
