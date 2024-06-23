@@ -2,10 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Neo4JUtils } from './services/neo4j.database.service';
 import { Neo4jModule } from './neo4j.module';
 import { Neo4jConfig } from './entities/neo4j.config';
-import { Driver } from 'neo4j-driver';
+import { Driver, Neo4jError } from 'neo4j-driver';
 import { lastValueFrom } from 'rxjs';
 import { Neo4JHealthService } from './health/health.service';
 import { NEO_4J_DATABASE, NEO_4J_DRIVER } from './assets/constants';
+import ConnectionPool from 'ioredis/built/cluster/ConnectionPool';
 
 describe('neo4j', () => {
   let neoService: Neo4JUtils;
@@ -63,6 +64,7 @@ describe('neo4j', () => {
     expect(serverInfo.address).toContain('localhost:7687');
   });
 
+
   it('should insert data', async () => {
     const result = await lastValueFrom(neoService.execute(`CREATE (charlie:Person:Actor {name: 'Charlie Sheen'}), (oliver:Person:Director {name: 'Oliver Stone'})`));
     expect(result.queryType).toBe('w');
@@ -71,6 +73,20 @@ describe('neo4j', () => {
     expect(result.counters.containsUpdates()).toBe(true);
   });
 
+  it('should close connection', async () => {
+    const r = await driver.close();
+
+    expect(r).toBeUndefined();
+  });
+
+  it('not connect to server (connection has been closed)', async () => {
+    await expect(driver?.getServerInfo()).rejects.toThrow(new Neo4jError('Pool is closed, it is no more able to serve requests.', ConnectionPool.name));
+  });
+
+  it('health check down working', async () => {
+    await expect(healthService.check()).rejects.toThrow();
+    expect(await healthService.check().then(() => 'up').catch(() => 'down')).toBe('down');
+  });
 });
 
 
