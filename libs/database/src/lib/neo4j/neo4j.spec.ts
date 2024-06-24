@@ -36,7 +36,7 @@ describe('neo4j', () => {
 
   it('driver injection token', async () => {
     expect(driver).toBeDefined();
-    expect(driver.getServerInfo()).toBeDefined();
+    expect(await driver.getServerInfo()).toBeDefined();
   });
 
   it('database injection token', () => {
@@ -125,7 +125,8 @@ describe('neo4j', () => {
       '  (theMatrix:Movie {title: \'The Matrix\'}),\n' +
       '  (keanu)-[:ACTED_IN]->(theMatrix),\n' +
       '  (laurence)-[:ACTED_IN]->(theMatrix),\n' +
-      '  (carrie)-[:ACTED_IN]->(theMatrix)';
+      '  (carrie)-[:ACTED_IN]->(theMatrix),\n' +
+      '  (tom)-[:DIRECTED]->(theMatrix)\n';
 
     const result = await lastValueFrom(neoService.query(query, Neo4jOperation.WRITE));
 
