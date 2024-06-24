@@ -19,7 +19,7 @@ export class Neo4JUtils {
     return this.runQueries([query], operation, parameters);
   }
 
-  //Comment #1
+  // Comment #1
   // Keep in mind that executing a lot of queries, you keep a database connection opened for a very long time.
   // Basically, until you read/write the whole content.
   // As you don't have many connection (limited by the database),
@@ -39,6 +39,7 @@ export class Neo4JUtils {
     );
   }
 
+  // Relates to Comment #1
   runExecution(queries: string[], parameters?: Parameters): Observable<ResultSummary[]> {
     return this.run(queries, Neo4jOperation.EXECUTE, parameters) as Observable<ResultSummary[]>;
   }
@@ -57,8 +58,8 @@ export class Neo4JUtils {
       return throwError(() => new BadRequestException('Not supported!'));
     }
 
-    //because of the Comment #1
-    //we close connection on stream finish
+    // because of the Comment #1
+    // we close connection on stream finish
     return provider.run(queries, session, parameters || {}, config).pipe(
       finalize(() => session.close().subscribe({ error: (err) => Logger.error('Failed to close session', err) }))
     );
