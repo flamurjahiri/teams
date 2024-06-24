@@ -17,6 +17,7 @@ node_modules
 .settings/
 *.sublime-workspace
 
+libs/database/src/lib/neo4j/neo4j_db
 # IDE - VSCode
 .vscode/*
 !.vscode/settings.json
