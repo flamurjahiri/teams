@@ -5,6 +5,7 @@ dist
 tmp
 /out-tsc
 /apps/sync
+apps/sync
 
 # dependencies
 node_modules
