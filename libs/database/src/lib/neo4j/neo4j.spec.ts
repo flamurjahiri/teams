@@ -6,7 +6,7 @@ import { Driver, Neo4jError } from 'neo4j-driver';
 import { Neo4JHealthService } from './health/health.service';
 import { NEO_4J_CONNECTION_DRIVER, NEO_4J_DATABASE, NEO_4J_DRIVERS, NEO_4J_HEALTH_CHECK } from './assets/constants';
 import { lastValueFrom } from 'rxjs';
-import { Neo4jOperation } from './entities/neo4j.operation.type';
+import { Neo4jOperation } from './processor/neo4j.operation.type';
 
 describe('neo4j', () => {
   let neoService: Neo4JUtils;

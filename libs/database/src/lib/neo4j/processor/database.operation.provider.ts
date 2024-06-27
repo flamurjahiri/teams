@@ -3,7 +3,7 @@ import { ReadOperation } from './impl/read.operation';
 import { WriteOperation } from './impl/write.operation';
 import { DefaultOperation } from './impl/default.operation';
 import { Neo4jOperationProcessor } from './neo4j.operation.processor';
-import { Neo4jOperation } from '../entities/neo4j.operation.type';
+import { Neo4jOperation } from './neo4j.operation.type';
 
 @Injectable()
 export class DatabaseOperationProvider {

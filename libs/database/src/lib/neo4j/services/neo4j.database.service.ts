@@ -4,7 +4,7 @@ import { finalize, map, Observable, throwError } from 'rxjs';
 import { Record, ResultSummary, SessionConfig, TransactionConfig } from 'neo4j-driver-core';
 import { DatabaseOperationProvider } from '../processor/database.operation.provider';
 import { Parameters } from 'neo4j-driver/types/query-runner';
-import { Neo4jOperation } from '../entities/neo4j.operation.type';
+import { Neo4jOperation } from '../processor/neo4j.operation.type';
 
 export class Neo4JUtils {
 

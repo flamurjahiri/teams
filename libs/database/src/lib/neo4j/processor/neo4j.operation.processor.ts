@@ -1,7 +1,7 @@
 import { RxSession } from 'neo4j-driver';
 import { Observable } from 'rxjs';
 import { Parameters } from 'neo4j-driver/types/query-runner';
-import { Neo4jOperation } from '../entities/neo4j.operation.type';
+import { Neo4jOperation } from './neo4j.operation.type';
 import { Record, ResultSummary, TransactionConfig } from 'neo4j-driver-core';
 
 export abstract class Neo4jOperationProcessor<T extends ResultSummary | Record> {

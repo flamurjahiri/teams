@@ -4,7 +4,7 @@ import { forkJoin, Observable, reduce, toArray } from 'rxjs';
 import { Record, TransactionConfig } from 'neo4j-driver-core';
 import { Parameters } from 'neo4j-driver/types/query-runner';
 import { RxSession } from 'neo4j-driver';
-import { Neo4jOperation } from '../../entities/neo4j.operation.type';
+import { Neo4jOperation } from '../neo4j.operation.type';
 
 @Injectable()
 export class ReadOperation extends Neo4jOperationProcessor<Record> {
