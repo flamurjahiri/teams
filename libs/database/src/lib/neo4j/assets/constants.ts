@@ -1,5 +1,4 @@
-export const NEO_4J_DRIVERS = 'NEO_4J_DRIVERS';
-export const NEO_4J_HEALTH_CHECK = 'NEO_4J_HEALTH_CHECK';
+export const NEO_4J_HEALTH_CHECK = (connectionName?: string): string => `NEO_4J_HEALTH_CHECK_${connectionName || 'all'}`;
 
 export const NEO_4J_CONNECTION_DRIVER = (connectionName?: string) => `NEO_4J_DRIVER_${connectionName || 'default'}`;
 

@@ -1,6 +1,6 @@
 import { BadRequestException, DynamicModule, Module, Provider } from '@nestjs/common';
 import { Neo4jConfig } from './entities/neo4j.config';
-import { NEO_4J_CONNECTION_DRIVER, NEO_4J_DATABASE, NEO_4J_DRIVERS, NEO_4J_HEALTH_CHECK } from './assets/constants';
+import { NEO_4J_CONNECTION_DRIVER, NEO_4J_DATABASE, NEO_4J_HEALTH_CHECK } from './assets/constants';
 import neo4j, { Driver } from 'neo4j-driver';
 import { Neo4JHealthService } from './health/health.service';
 import { Neo4JUtils } from './services/neo4j.database.service';
@@ -15,6 +15,7 @@ import { combineLatest, from, lastValueFrom, map, mergeMap, of, toArray } from '
 class ConnectionDriver {
   driver: Driver;
   connectionName: string;
+  simplifyName: string;
 }
 
 
@@ -28,16 +29,17 @@ export class Neo4jModule {
     const configs = MAP_VALIDATE_ROOT_CONFIGS(data);
 
     const drivers = configs.map(c => ({
+      simplifyName: c.connectionName,
       connectionName: NEO_4J_CONNECTION_DRIVER(c.connectionName),
       driver: neo4j.driver(c.uri, neo4j.auth.basic(c.user, c.password), c.config)
     }));
 
-    const providers = GET_ROOT_PROVIDERS(configs, drivers);
+    const providers = GET_ROOT_PROVIDERS(drivers);
 
     return {
       global: true,
       module: Neo4jModule,
-      exports: [NEO_4J_DRIVERS, OperationProvider, ...providers],
+      exports: [OperationProvider, ...providers],
       providers: [...providers, ReadOperation, WriteOperation, DefaultOperation, OperationProvider]
     };
   }
@@ -60,10 +62,11 @@ export class Neo4jModule {
 
     const drivers = configs.map(c => ({
       connectionName: NEO_4J_CONNECTION_DRIVER(c.connectionName),
+      simplifyName: c.connectionName,
       driver: neo4j.driver(c.uri, neo4j.auth.basic(c.user, c.password), c.config)
     }));
 
-    const providers = GET_ROOT_PROVIDERS(configs, drivers);
+    const providers = GET_ROOT_PROVIDERS(drivers);
 
     const NEO_UTILS_PROVIDERS =
       configs
@@ -117,7 +120,7 @@ const MAP_VALIDATE_ROOT_CONFIGS = (data: Neo4jConfig | Neo4jConfig[]): Neo4jConf
 };
 
 
-const GET_ROOT_PROVIDERS = (configs: Neo4jConfig[], drivers: ConnectionDriver[]): Provider<Driver | string[] | Neo4JHealthService>[] => {
+const GET_ROOT_PROVIDERS = (drivers: ConnectionDriver[]): Provider<Driver | string[] | Neo4JHealthService>[] => {
 
   const driverProviders: Provider<Driver>[] = drivers.map(r => {
     return ({
@@ -126,17 +129,18 @@ const GET_ROOT_PROVIDERS = (configs: Neo4jConfig[], drivers: ConnectionDriver[])
     });
   });
 
-  const connectionNamesProvider: Provider<string[]> = {
-    provide: NEO_4J_DRIVERS,
-    useValue: configs.map(r => r.connectionName)
-  };
 
   const healthProvider: Provider<Neo4JHealthService> = {
-    provide: NEO_4J_HEALTH_CHECK,
+    provide: NEO_4J_HEALTH_CHECK(),
     useValue: new Neo4JHealthService(drivers)
   };
 
-  return [...driverProviders, connectionNamesProvider, healthProvider];
+  const customHealthProvider: Provider<Neo4JHealthService>[] = drivers.map(r => ({
+    provide: NEO_4J_HEALTH_CHECK(r.simplifyName),
+    useValue: new Neo4JHealthService([{ driver: r.driver, connectionName: r.connectionName }])
+  }));
+
+  return [...driverProviders, healthProvider, ...customHealthProvider];
 };
 
 
@@ -172,8 +176,8 @@ const INIT_INDEXES = (config: Neo4jFactoryConfig, utils: Neo4JUtils): Promise<Ne
 
   return lastValueFrom(
     from(config.indexes).pipe(
-      mergeMap(r => combineLatest([of(r.table), from(r.field)])),
-      map(([table, indexField]) => `CREATE INDEX ${table}_${indexField} IF NOT EXISTS FOR (b:${table}) ON (b.${indexField})`),
+      mergeMap(r => combineLatest([of(r.table), from(r.data)])),
+      map(([table, indexField]) => `CREATE INDEX ${table}_${indexField.field} IF NOT EXISTS FOR (b:${table}) ON (b.${indexField.field})`),
       mergeMap(query => utils.execute(query)),
       toArray(),
       map(() => utils)

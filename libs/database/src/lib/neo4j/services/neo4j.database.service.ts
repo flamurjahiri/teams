@@ -9,7 +9,6 @@ import { Neo4jOperation } from '../entities/neo4j.operation.type';
 export class Neo4JUtils {
 
   constructor(private readonly driver: Driver, private readonly database: string, private readonly operationProvider: OperationProvider) {
-    console.log(`init here `);
   }
 
 
