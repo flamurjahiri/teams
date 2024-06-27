@@ -6,6 +6,7 @@ tmp
 /out-tsc
 /apps/sync
 apps/sync
+/apps/sync/src/app/data
 
 # dependencies
 node_modules
