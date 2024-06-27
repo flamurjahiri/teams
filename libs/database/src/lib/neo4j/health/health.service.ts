@@ -1,29 +1,61 @@
-import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
+import { OnModuleDestroy } from '@nestjs/common';
 import { HealthCheckError, HealthIndicator, HealthIndicatorResult } from '@nestjs/terminus';
 import { Driver } from 'neo4j-driver';
-import { NEO_4J_DRIVER } from '../assets/constants';
+import { catchError, filter, from, map, mergeMap, Observable, of, throwError, toArray } from 'rxjs';
+import { fromPromise } from '@teams/utils';
 
-@Injectable()
+class HealthResultData {
+  name: string;
+  value: boolean;
+  error?: any;
+}
+
 export class Neo4JHealthService extends HealthIndicator implements OnModuleDestroy {
-  @Inject(NEO_4J_DRIVER) private readonly driver: Driver;
 
-  async onModuleDestroy(): Promise<void> {
-    return this.driver?.close();
+  constructor(private readonly data: { connectionName: string, driver: Driver }[]) {
+    super();
   }
 
-  async check(): Promise<HealthIndicatorResult> {
+  async onModuleDestroy(): Promise<void[]> {
+    return Promise.all(this.data?.map(d => d?.driver?.close()) || []);
+  }
+
+  check(): Observable<HealthIndicatorResult> {
     const startTime = new Date();
 
-    const getStatus = (error?: any): HealthIndicatorResult => {
-      return this.getStatus('Neo4j Health Check', !error, {
-        error, duration: new Date().getTime() - startTime.getTime()
+    const getStatus = (status: boolean, data: HealthResultData[]): HealthIndicatorResult => {
+      return this.getStatus('Neo4j Health Check', status, {
+        data, duration: new Date().getTime() - startTime.getTime()
       });
     };
 
-    return this.driver.getServerInfo().then(() => getStatus())
-      .catch(err => {
-        throw new HealthCheckError('Neo4j Health Check', getStatus(err));
-      });
+
+    return from(this.data || []).pipe(
+      filter(d => !!d?.driver),
+      mergeMap(d => fromPromise(d.driver.getServerInfo()).pipe(
+        map(() => ({ name: GET_CONNECTION_SIMPLIFY_NAME(d.connectionName), value: true })),
+        catchError(err => of({ name: GET_CONNECTION_SIMPLIFY_NAME(d.connectionName), value: false, err }))
+      )),
+      toArray(),
+      mergeMap(results => {
+
+        const isHealthy = !results.find(r => !r.value);
+
+        if (!isHealthy) {
+          return throwError(() => new HealthCheckError('Neo4j Health Check', getStatus(false, results)));
+        }
+
+        return of(getStatus(true, results));
+
+      })
+    );
+
   }
 
 }
+
+const GET_CONNECTION_SIMPLIFY_NAME = (connectionName: string): string => {
+  const split = connectionName?.split('_');
+
+  return split[split.length - 1];
+};

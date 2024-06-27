@@ -1,3 +1,6 @@
-export const NEO_4J_DRIVER = 'NEO_4J_DRIVER';
-export const NEO_4J_DATABASE = 'NEO_4J_DATABASE';
-export const NEO_4J_CLIENT = 'NEO_4J_CLIENT';
+export const NEO_4J_DRIVERS = 'NEO_4J_DRIVERS';
+export const NEO_4J_HEALTH_CHECK = 'NEO_4J_HEALTH_CHECK';
+
+export const NEO_4J_CONNECTION_DRIVER = (connectionName?: string) => `NEO_4J_DRIVER_${connectionName || 'default'}`;
+
+export const NEO_4J_DATABASE = (database: string, connectionName?: string) => `NEO_4J_DATABASE_${database}_${connectionName || 'default'}`;

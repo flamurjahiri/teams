@@ -3,9 +3,9 @@ import { Neo4JUtils } from './services/neo4j.database.service';
 import { Neo4jModule } from './neo4j.module';
 import { Neo4jConfig } from './entities/neo4j.config';
 import { Driver, Neo4jError } from 'neo4j-driver';
-import { lastValueFrom } from 'rxjs';
 import { Neo4JHealthService } from './health/health.service';
-import { NEO_4J_DATABASE, NEO_4J_DRIVER } from './assets/constants';
+import { NEO_4J_CONNECTION_DRIVER, NEO_4J_DATABASE, NEO_4J_DRIVERS, NEO_4J_HEALTH_CHECK } from './assets/constants';
+import { lastValueFrom } from 'rxjs';
 import { Neo4jOperation } from './entities/neo4j.operation.type';
 
 describe('neo4j', () => {
@@ -13,9 +13,11 @@ describe('neo4j', () => {
 
   let moduleRef: TestingModule;
 
-  let driver: Driver;
-  let database: string;
+  const drivers: Driver[] = [];
+  let driversNames: string[];
   let healthService: Neo4JHealthService;
+  const neo4jUtils: Neo4JUtils[] = [];
+  let driver: Driver;
 
   beforeAll(async () => {
     const {
@@ -24,37 +26,59 @@ describe('neo4j', () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       module,
       ...rest
-    } = Neo4jModule.forTesting(
-      new Neo4jConfig('neo4j://localhost:7687', 'neo4j', 'flamur11'));
+    } = Neo4jModule.forTesting([
+      new Neo4jConfig('neo4j://localhost:7687', 'neo4j', 'flamur11'),
+      new Neo4jConfig('neo4j://localhost:7687', 'neo4j', 'flamur11', 'flamurConnection')
+    ]);
 
     moduleRef = await Test.createTestingModule(rest).compile();
-    neoService = moduleRef.get<Neo4JUtils>(Neo4JUtils);
-    driver = moduleRef.get<Driver>(NEO_4J_DRIVER);
-    database = moduleRef.get<string>(NEO_4J_DATABASE);
-    healthService = moduleRef.get<Neo4JHealthService>(Neo4JHealthService);
+
+    neo4jUtils.push(moduleRef.get<Neo4JUtils>(NEO_4J_DATABASE('neo4j', 'flamurConnection')));
+    neo4jUtils.push(moduleRef.get<Neo4JUtils>(NEO_4J_DATABASE('neo4j')));
+
+    drivers.push(moduleRef.get<Driver>(NEO_4J_CONNECTION_DRIVER('flamurConnection')));
+    drivers.push(moduleRef.get<Driver>(NEO_4J_CONNECTION_DRIVER()));
+
+
+    driversNames = moduleRef.get<string[]>(NEO_4J_DRIVERS);
+    healthService = moduleRef.get<Neo4JHealthService>(NEO_4J_HEALTH_CHECK);
+    driver = drivers[0];
+    neoService = neo4jUtils[0];
+  });
+
+  it('should ', () => {
+    expect(true).toBe(true);
   });
 
   it('driver injection token', async () => {
     expect(driver).toBeDefined();
+    expect(drivers.length).toBe(2);
     expect(await driver.getServerInfo()).toBeDefined();
   });
 
-  it('database injection token', () => {
-    expect(database).toBeDefined();
-    expect(database).toBe('neo4j');
+  it('drivers length token', () => {
+    expect(driversNames).toBeDefined();
+    expect(driversNames.length).toBe(2);
+    expect(driversNames).toContain('flamurConnection');
+    expect(driversNames).toContain('default');
+  });
+
+  it('neo4jutils ', () => {
+    expect(neo4jUtils).toBeDefined();
+    expect(neo4jUtils.length).toBe(2);
   });
 
   it('health check', async () => {
     expect(healthService).toBeDefined();
-    const healthCheck = await healthService.check();
+    const healthCheck = await lastValueFrom(healthService.check());
     expect(healthCheck).toBeDefined();
     const internalHealth = healthCheck['Neo4j Health Check'];
     expect(internalHealth).toBeDefined();
     expect(internalHealth.status).toBe('up');
     expect(Object.keys(internalHealth)).toHaveLength(3);
-    expect(Object.keys(internalHealth)).toStrictEqual(['status', 'error', 'duration']);
+    expect(Object.keys(internalHealth)).toStrictEqual(['status', 'data', 'duration']);
     expect(Object.keys(internalHealth)).toContain('status');
-    expect(Object.keys(internalHealth)).toContain('error');
+    expect(Object.keys(internalHealth)).toContain('data');
     expect(Object.keys(internalHealth)).toContain('duration');
     expect(internalHealth.duration).toBeGreaterThan(0);
   });
@@ -72,7 +96,9 @@ describe('neo4j', () => {
     expect(result.server.address).toContain('localhost:7687');
     expect(result.counters.containsUpdates()).toBe(true);
 
-    const secondResult = await lastValueFrom(neoService.query(`CREATE (flamur2:Person:Actor {name: 'Flamur2 Jahiri'}), (ahmet2:Person:Director {name: 'Ahmet2 Stone'})`, Neo4jOperation.WRITE));
+    const secondResult = await lastValueFrom(neoService.query(`CREATE
+    (flamur2:Person:Actor {name: 'Flamur2 Jahiri'}), (ahmet2:Person:Director {name: 'Ahmet2 Stone'})
+    `, Neo4jOperation.WRITE));
     //just to insert the data
     expect(secondResult.length).toEqual(0);
   });
@@ -161,8 +187,8 @@ describe('neo4j', () => {
   });
 
   it('health check down working', async () => {
-    await expect(healthService.check()).rejects.toThrow();
-    expect(await healthService.check().then(() => 'up').catch(() => 'down')).toBe('down');
+    await expect(lastValueFrom(healthService.check())).rejects.toThrow();
+    expect(await lastValueFrom(healthService.check()).then(() => 'up').catch(() => 'down')).toBe('down');
   });
 });
 
