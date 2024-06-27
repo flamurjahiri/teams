@@ -50,6 +50,8 @@ declare global {
     add(index: number, entity: T): Array<T>
 
     paginateList(paginatedFilters: PaginatedFilters, searchFields?: string[]): PaginatedEntity<T>
+
+    partition(numberOfElements: number): T[][];
   }
 }
 
@@ -182,6 +184,10 @@ Array.prototype.paginateList = function <T>(this: T[], paginatedFilters: Paginat
   return ({
     count, limit, currentPage, data: filteredData, pageCount: limit === 0 ? 0 : Math.ceil((count / limit) as number)
   });
+}
+
+Array.prototype.partition = function <T>(this: T[], n: number): T[][] {
+  return this.length ? [this.splice(0, n)].concat(this.partition(n)) : [];
 }
 
 const getValueAtKey = (obj: any, k: string) => {
