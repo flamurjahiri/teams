@@ -2,13 +2,13 @@ import { BadRequestException, Logger } from '@nestjs/common';
 import { Driver } from 'neo4j-driver';
 import { finalize, map, Observable, throwError } from 'rxjs';
 import { Record, ResultSummary, SessionConfig, TransactionConfig } from 'neo4j-driver-core';
-import { OperationProvider } from '../processor/operation.provider';
+import { DatabaseOperationProvider } from '../processor/database.operation.provider';
 import { Parameters } from 'neo4j-driver/types/query-runner';
 import { Neo4jOperation } from '../entities/neo4j.operation.type';
 
 export class Neo4JUtils {
 
-  constructor(private readonly driver: Driver, private readonly database: string, private readonly operationProvider: OperationProvider) {
+  constructor(private readonly driver: Driver, private readonly database: string, private readonly operationProvider: DatabaseOperationProvider) {
   }
 
 

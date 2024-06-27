@@ -7,7 +7,7 @@ import { Neo4JUtils } from './services/neo4j.database.service';
 import { ReadOperation } from './processor/impl/read.operation';
 import { WriteOperation } from './processor/impl/write.operation';
 import { DefaultOperation } from './processor/impl/default.operation';
-import { OperationProvider } from './processor/operation.provider';
+import { DatabaseOperationProvider } from './processor/database.operation.provider';
 import { Neo4jFactoryConfig } from './entities/neo4j.factory.config';
 import { combineLatest, from, lastValueFrom, map, mergeMap, of, toArray } from 'rxjs';
 
@@ -39,8 +39,8 @@ export class Neo4jModule {
     return {
       global: true,
       module: Neo4jModule,
-      exports: [OperationProvider, ...providers],
-      providers: [...providers, ReadOperation, WriteOperation, DefaultOperation, OperationProvider]
+      exports: [DatabaseOperationProvider, ...providers],
+      providers: [...providers, ReadOperation, WriteOperation, DefaultOperation, DatabaseOperationProvider]
     };
   }
 
@@ -79,17 +79,17 @@ export class Neo4jModule {
         .map(config =>
           ({
             provide: NEO_4J_DATABASE(config.database, config.connectionName),
-            useFactory: async (provider: OperationProvider) => {
+            useFactory: async (provider: DatabaseOperationProvider) => {
               return INIT_INDEXES(config as Neo4jFactoryConfig, new Neo4JUtils(drivers.find(d => d.connectionName === NEO_4J_CONNECTION_DRIVER(config.connectionName)).driver, config.database, provider));
             },
-            inject: [OperationProvider]
+            inject: [DatabaseOperationProvider]
           }));
 
 
     return {
       global: false,
       module: Neo4jModule,
-      providers: [...providers, ...NEO_UTILS_PROVIDERS, ReadOperation, WriteOperation, DefaultOperation, OperationProvider],
+      providers: [...providers, ...NEO_UTILS_PROVIDERS, ReadOperation, WriteOperation, DefaultOperation, DatabaseOperationProvider],
       exports: [...providers, ...NEO_UTILS_PROVIDERS]
     };
 
@@ -161,10 +161,10 @@ const GET_FEATURE_PROVIDERS = (configs: Neo4jFactoryConfig[]): Provider<Neo4JUti
   return configs.map(config =>
     ({
       provide: NEO_4J_DATABASE(config.database, config.connectionName),
-      useFactory: async (driver: Driver, provider: OperationProvider) => {
+      useFactory: async (driver: Driver, provider: DatabaseOperationProvider) => {
         return INIT_INDEXES(config, new Neo4JUtils(driver, config.database, provider));
       },
-      inject: [NEO_4J_CONNECTION_DRIVER(config.connectionName), OperationProvider]
+      inject: [NEO_4J_CONNECTION_DRIVER(config.connectionName), DatabaseOperationProvider]
     }));
 };
 

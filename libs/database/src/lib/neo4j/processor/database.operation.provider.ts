@@ -6,7 +6,7 @@ import { Neo4jOperationProcessor } from './neo4j.operation.processor';
 import { Neo4jOperation } from '../entities/neo4j.operation.type';
 
 @Injectable()
-export class OperationProvider {
+export class DatabaseOperationProvider {
   @Inject(ReadOperation) private readonly readOperation: ReadOperation;
   @Inject(WriteOperation) private readonly writeOperation: WriteOperation;
   @Inject(DefaultOperation) private readonly defaultOperation: DefaultOperation;
