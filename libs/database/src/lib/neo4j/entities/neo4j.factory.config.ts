@@ -14,8 +14,4 @@ export class Neo4jFactoryConfig {
     this.connectionName = connectionName;
     this.sessionParams = sessionParams;
   }
-
-  getParams(): SessionConfig {
-    return { ...(this.sessionParams || {}), database: this.database };
-  }
 }
