@@ -9,7 +9,7 @@ import { WriteOperation } from './processor/impl/write.operation';
 import { DefaultOperation } from './processor/impl/default.operation';
 import { DatabaseOperationProvider } from './processor/database.operation.provider';
 import { Neo4jFactoryConfig } from './entities/neo4j.factory.config';
-import { filter, from, lastValueFrom, map, mergeMap, toArray } from 'rxjs';
+import { concatMap, filter, from, lastValueFrom, map, toArray } from 'rxjs';
 
 
 class ConnectionDriver {
@@ -178,7 +178,7 @@ const INIT_INDEXES = (config: Neo4jFactoryConfig, utils: Neo4JUtils): Promise<Ne
     from(config.indexes).pipe(
       filter(index => index?.length > 0),
       map(index => `${index.startsWith('CREATE INDEX') ? '' : 'CREATE INDEX '}${index}`),
-      mergeMap(query => utils.execute(query)),
+      concatMap(query => utils.execute(query)),
       toArray(),
       map(() => utils)
     ));
