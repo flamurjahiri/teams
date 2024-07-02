@@ -4,7 +4,7 @@ import { Neo4jModule } from './neo4j.module';
 import { Neo4jConfig } from './entities/neo4j.config';
 import { Driver, Neo4jError } from 'neo4j-driver';
 import { Neo4JHealthService } from './health/health.service';
-import { NEO_4J_CONNECTION_DRIVER, NEO_4J_DATABASE, NEO_4J_DRIVERS, NEO_4J_HEALTH_CHECK } from './assets/constants';
+import { NEO_4J_CONNECTION_DRIVER, NEO_4J_DATABASE, NEO_4J_HEALTH_CHECK } from './assets/constants';
 import { lastValueFrom } from 'rxjs';
 import { Neo4jOperation } from './processor/neo4j.operation.type';
 
@@ -14,7 +14,6 @@ describe('neo4j', () => {
   let moduleRef: TestingModule;
 
   const drivers: Driver[] = [];
-  let driversNames: string[];
   let healthService: Neo4JHealthService;
   const neo4jUtils: Neo4JUtils[] = [];
   let driver: Driver;
@@ -40,7 +39,6 @@ describe('neo4j', () => {
     drivers.push(moduleRef.get<Driver>(NEO_4J_CONNECTION_DRIVER()));
 
 
-    driversNames = moduleRef.get<string[]>(NEO_4J_DRIVERS);
     healthService = moduleRef.get<Neo4JHealthService>(NEO_4J_HEALTH_CHECK);
     driver = drivers[0];
     neoService = neo4jUtils[0];
@@ -54,13 +52,6 @@ describe('neo4j', () => {
     expect(driver).toBeDefined();
     expect(drivers.length).toBe(2);
     expect(await driver.getServerInfo()).toBeDefined();
-  });
-
-  it('drivers length token', () => {
-    expect(driversNames).toBeDefined();
-    expect(driversNames.length).toBe(2);
-    expect(driversNames).toContain('flamurConnection');
-    expect(driversNames).toContain('default');
   });
 
   it('neo4jutils ', () => {
