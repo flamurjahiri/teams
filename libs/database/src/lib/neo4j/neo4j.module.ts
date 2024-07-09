@@ -9,7 +9,7 @@ import { WriteOperation } from './processor/impl/write.operation';
 import { DefaultOperation } from './processor/impl/default.operation';
 import { DatabaseOperationProvider } from './processor/database.operation.provider';
 import { Neo4jFactoryConfig } from './entities/neo4j.factory.config';
-import { concatMap, filter, from, lastValueFrom, map, toArray } from 'rxjs';
+import { concatMap, filter, from, lastValueFrom, map, mergeMap, Observable, of, toArray } from 'rxjs';
 
 
 class ConnectionDriver {
@@ -158,30 +158,37 @@ const MAP_FEATURE_CONFIGS = (data: Neo4jFactoryConfig | Neo4jFactoryConfig[]): N
 
 
 const GET_FEATURE_PROVIDERS = (configs: Neo4jFactoryConfig[]): Provider<Neo4JUtils>[] => {
-  return configs.map(config =>
-    ({
-      provide: NEO_4J_DATABASE(config.database, config.connectionName),
-      useFactory: async (driver: Driver, provider: DatabaseOperationProvider) => {
-        return INIT_INDEXES(config, new Neo4JUtils(driver, config.database, provider));
-      },
-      inject: [NEO_4J_CONNECTION_DRIVER(config.connectionName), DatabaseOperationProvider]
-    }));
+  return configs.map(config => ({
+    provide: NEO_4J_DATABASE(config.database, config.connectionName),
+    useFactory: async (driver: Driver, provider: DatabaseOperationProvider) => {
+      const utils = new Neo4JUtils(driver, config.database, provider);
+      return lastValueFrom(
+        INIT_DATABASE(config, utils).pipe(mergeMap(utils => INIT_INDEXES(config, utils)))
+      );
+    },
+    inject: [NEO_4J_CONNECTION_DRIVER(config.connectionName), DatabaseOperationProvider]
+  }));
 };
 
 
-const INIT_INDEXES = (config: Neo4jFactoryConfig, utils: Neo4JUtils): Promise<Neo4JUtils> => {
+const INIT_DATABASE = (config: Neo4jFactoryConfig, utils: Neo4JUtils): Observable<Neo4JUtils> => {
+  return utils.execute(`CREATE DATABASE ${config.database} if not exists`).pipe(
+    map(() => utils)
+  );
+};
+
+const INIT_INDEXES = (config: Neo4jFactoryConfig, utils: Neo4JUtils): Observable<Neo4JUtils> => {
   if (!config?.indexes?.length) {
-    return Promise.resolve(utils);
+    return of(utils);
   }
 
-  return lastValueFrom(
-    from(config.indexes).pipe(
-      filter(index => index?.length > 0),
-      map(index => `${index.startsWith('CREATE INDEX') ? '' : 'CREATE INDEX '}${index}`),
-      concatMap(query => utils.execute(query)),
-      toArray(),
-      map(() => utils)
-    ));
+  return from(config.indexes).pipe(
+    filter(index => index?.length > 0),
+    map(index => `${index.startsWith('CREATE INDEX') ? '' : 'CREATE INDEX '}${index}`),
+    concatMap(query => utils.execute(query)),
+    toArray(),
+    map(() => utils)
+  );
 };
 
 //endregion
