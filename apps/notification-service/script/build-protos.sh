@@ -9,6 +9,5 @@ mkdir -p ${PROTO_DEST}
 
 apt-get update -y
 apt-get install protobuf-compiler -y
-npm i @protobuf-ts/protoc
 npm install -g protoc-gen-ts
 protoc -I=./src/app/protos --ts_out=${PROTO_DEST} ./src/app/protos/*.proto
