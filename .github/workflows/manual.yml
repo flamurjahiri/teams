@@ -36,6 +36,14 @@ jobs:
 
     - name: Install
       run: npm install
+      
+    - name: Install Protocol Buffers Compiler
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y protobuf-compiler
+
+    - name: Install Global Proto
+      run: npm install -g protoc-gen-ts
 
     - name: Run custom bash script
       run: |
