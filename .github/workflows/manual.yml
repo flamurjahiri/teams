@@ -54,7 +54,7 @@ jobs:
       uses: nrwl/nx-set-shas@v4
 
     - name: Build
-      run: npx nx build notification-service
+      run: npx nx build notification-service --skip-nx-cache
 
     - name: Test
-      run: npx nx test notification-service
+      run: npx nx test notification-service --skip-nx-cache
